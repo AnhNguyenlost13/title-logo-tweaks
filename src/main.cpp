@@ -1,24 +1,11 @@
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/LoadingLayer.hpp>
+#include <regex>
 
 using namespace geode::prelude;
 
 std::string customTitleLogo = "Geometry Dash";
-std::string cachedEWDString = "";
-// $execute{
-//     EventListener<web::WebTask> listener;
-//
-//     listener.bind([] (web::WebTask::Event& event) {
-//         if (const web::WebResponse* response = event.getValue())
-//         {
-//             gd::string res = response->string().unwrapOr("Geometry Dash");
-//             std::transform(res.begin(), res.end(), res.begin(), [](const unsigned char c){ return std::toupper(c); });
-//         } else if (event.isCancelled()) log::warn("req cancelled");
-//     });
-//
-//     auto request = web::WebRequest();
-//     if (Mod::get()->getSettingValue<bool>("every-word-dash-integration")) listener.setFilter(request.get("https://raw.githubusercontent.com/AnhNguyenlost13/super-duper-garbanzo/refs/heads/main/badeline.txt"));
-// }
+std::string cachedEWDString = "Ruminative Dash";
 
 bool setupTitleLogoReplacement(CCSprite* titleLogo, bool loadingLayer)
 {
@@ -29,10 +16,7 @@ bool setupTitleLogoReplacement(CCSprite* titleLogo, bool loadingLayer)
 
     CCLabelBMFont* newTitleLogo = CCLabelBMFont::create(temp.c_str(), "merged_output.fnt"_spr);
     CCLabelBMFont* newTitleLogoUnderlay = CCLabelBMFont::create(temp.c_str(), "underlay_bigsheet.fnt"_spr);
-    if (!newTitleLogo || !newTitleLogoUnderlay) {
-        log::error("Something went very wrong!");
-        return false;
-    }
+    if (!newTitleLogo || !newTitleLogoUnderlay) return false;
 
     newTitleLogo->limitLabelWidth(400.f, 1.25f, 0.25f);
     newTitleLogo->setID("custom-main-title"_spr);
@@ -67,27 +51,25 @@ class $modify(TLTLoadingLayer, LoadingLayer)
 
     $override bool init(const bool fromRefresh)
     {
-        // m_fields->m_listener.bind([this] (web::WebTask::Event* event)
-        // {
-        //     if (const web::WebResponse* response = event->getValue())
-        //     {
-        //         gd::string res = response->string().unwrapOr("Geometry Dash");
-        //         std::ranges::transform(res, res.begin(), [](const unsigned char c){ return std::toupper(c); });
-        //         // customTitleLogo = res;
-        //         cachedEWDString = res;
-        //         // should be uppercase???
-        //         log::info("EWD string: {}", res);
-        //     }
-        //     else if (event->isCancelled()) log::warn("req cancelled");
-        // });
-
         // Initial setup - only on first load
         if (!fromRefresh)
         {
-            web::WebTask task = web::WebRequest().get("https://raw.githubusercontent.com/AnhNguyenlost13/super-duper-garbanzo/refs/heads/main/badeline.txt");
+            // web::WebTask task = web::WebRequest().get("https://raw.githubusercontent.com/AnhNguyenlost13/super-duper-garbanzo/refs/heads/main/badeline.txt");
+            web::WebTask task = web::WebRequest().get("https://gdcolon.com/ewd_history.txt");
             while (task.isPending()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            cachedEWDString = task.getFinishedValue()->string().unwrapOr("Geometry Dash"); // There you go, if it fails it just falls back to "Geometry Dash"
-            // and yes caching is there until the next game restart.
+            if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("oh no!!"); rawResponse == "oh no!!") {
+                log::error("Failed to fetch EWD string, using default");
+                cachedEWDString = "Ruminative Dash";
+            } else {
+                const std::regex pattern(R"(->\s*(.+)$)"); // everything after the arrow, we don't need the date
+                if (std::smatch match; std::regex_search(rawResponse, match, pattern) && match.size() > 1) {
+                    cachedEWDString = match.str(1);
+                } else {
+                    log::error("Failed to parse EWD string, using default");
+                    cachedEWDString = "Ruminative Dash";
+                }
+            }
+
             std::ranges::transform(cachedEWDString, cachedEWDString.begin(), [](const unsigned char c){ return std::toupper(c); });
 
             CCFileUtils::sharedFileUtils()->addSearchPath((Mod::get()->getTempDir() / "resources").string().c_str());
@@ -109,12 +91,12 @@ class $modify(TLTLoadingLayer, LoadingLayer)
 
 class $modify(TLTMenuLayer, MenuLayer) {
     $override bool init() override {
-        bool result = MenuLayer::init();
+        if (!MenuLayer::init()) return false;
 
         const auto titleLogo = typeinfo_cast<CCSprite*>(getChildByIDRecursive("main-title"));
         if (!titleLogo) {
             log::error("whoever removed the node with ID 'main-title' from the MenuLayer, you are a menace to society!");
-            return result;
+            return true;
         }
 
         if (!Mod::get()->getSettingValue<bool>("every-word-dash-integration")) customTitleLogo = Mod::get()->getSettingValue<std::string>("custom-title-logo");
