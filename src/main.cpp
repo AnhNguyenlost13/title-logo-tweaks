@@ -19,18 +19,18 @@ bool setupTitleLogoReplacement(CCSprite* titleLogo, bool loadingLayer)
     CCLabelBMFont* newTitleLogoUnderlay = CCLabelBMFont::create(temp.c_str(), "underlay_bigsheet.fnt"_spr);
     if (!newTitleLogo || !newTitleLogoUnderlay) return false;
 
-    newTitleLogo->limitLabelWidth(400.f, 1.25f, 0.25f);
+    newTitleLogo->limitLabelWidth(400.f, 1.f, 0.25f);
     newTitleLogo->setID("custom-main-title"_spr);
     newTitleLogo->setZOrder(1);
     titleLogo->addChild(newTitleLogo);
 
-    newTitleLogoUnderlay->limitLabelWidth(400.f, 1.25f, 0.25f);
+    newTitleLogoUnderlay->limitLabelWidth(400.f, 1.f, 0.25f);
     newTitleLogoUnderlay->setID("custom-main-title-underlay"_spr);
     newTitleLogoUnderlay->setZOrder(0);
     titleLogo->addChild(newTitleLogoUnderlay);
     titleLogo->updateLayout();
 
-    if (loadingLayer) titleLogo->setScale(1.2f);
+    if (loadingLayer) titleLogo->setScale(1.2f); else titleLogo->setScale(1.1f);
     const auto center = titleLogo->getContentSize() / 2.f;
     newTitleLogo->setPosition(center);
     newTitleLogoUnderlay->setPosition(newTitleLogo->getPosition());
