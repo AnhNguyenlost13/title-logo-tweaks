@@ -1,0 +1,42 @@
+{
+	"geode": "4.6.3",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "catgirlde.titlelogotweaks",
+	"name": "Title Logo Tweaks",
+	"version": "v1.0.0",
+	"developer": "catgirldev",
+	"description": "A mod that tweaks the title logo in Geometry Dash.",
+	"settings": {
+		"custom-title-logo": {
+			"name": "Custom Title Logo",
+			"type": "string",
+			"default": "Geometry Dash",
+			"description": "Custom title logo text. Leave empty for Geometry Dash (real).",
+			"match": "^[ !\"#$%&'()*+,\\-./0-9:;<=>?@A-Z[\\]\\\\a-z{}~]*$"
+		},
+		"every-word-dash-integration": {
+			"name": "Every Word Dash Integration",
+			"type": "bool",
+			"default": true,
+			"description": "Enable integration with the <cg>Every Word Dash API</cg>. Will send an API request on every game boot."
+		},
+		"force-uppercase": {
+			"name": "Force Uppercase",
+			"type": "bool",
+			"default": true,
+			"description": "Forces the font to be uppercase, if disabled you still can use both lower and upper cases.\n<cy>Note that Every Word Dash titles are always uppercase.</cy>"
+		}
+	},
+	"resources": {
+		"files": [
+			"resources/*.fnt",
+			"resources/*.png"
+		]
+	},
+	"early-load": true
+}
