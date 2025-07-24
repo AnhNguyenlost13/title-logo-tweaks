@@ -30,10 +30,13 @@ bool setupTitleLogoReplacement(CCSprite* titleLogo, bool loadingLayer)
     titleLogo->addChild(newTitleLogoUnderlay);
     titleLogo->updateLayout();
 
-    if (loadingLayer) titleLogo->setScale(1.2f); else titleLogo->setScale(1.1f);
+    // if (loadingLayer) titleLogo->setScale(1.2f); else titleLogo->setScale(1.1f);
+
     const auto center = titleLogo->getContentSize() / 2.f;
     newTitleLogo->setPosition(center);
+    newTitleLogo->setPosition(newTitleLogo->getPositionX() + 6.f, newTitleLogo->getPositionY() - 4.f); // i hate hardcoded stuff but this will do
     newTitleLogoUnderlay->setPosition(newTitleLogo->getPosition());
+    newTitleLogo->setScale(1.25f); newTitleLogoUnderlay->setScale(1.25f);
 
     return true;
 }
