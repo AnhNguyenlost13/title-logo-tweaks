@@ -51,23 +51,16 @@ class $modify(TLTLoadingLayer, LoadingLayer)
 
     $override bool init(const bool fromRefresh)
     {
-        // Initial setup - only on first load
+        // Initial setup - only on the first load
         if (!fromRefresh)
         {
-            // web::WebTask task = web::WebRequest().get("https://raw.githubusercontent.com/AnhNguyenlost13/super-duper-garbanzo/refs/heads/main/badeline.txt");
             web::WebTask task = web::WebRequest().get("https://gdcolon.com/ewd_history.txt");
             while (task.isPending()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("oh no!!"); rawResponse == "oh no!!") {
-                log::error("Failed to fetch EWD string, using default");
-                cachedEWDString = "Ruminative Dash";
-            } else {
+            if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("oh no!!"); rawResponse == "oh no!!") cachedEWDString = "Ruminative Dash";
+            else {
                 const std::regex pattern(R"(->\s*(.+)$)"); // everything after the arrow, we don't need the date
-                if (std::smatch match; std::regex_search(rawResponse, match, pattern) && match.size() > 1) {
-                    cachedEWDString = match.str(1);
-                } else {
-                    log::error("Failed to parse EWD string, using default");
-                    cachedEWDString = "Ruminative Dash";
-                }
+                if (std::smatch match; std::regex_search(rawResponse, match, pattern) && match.size() > 1) cachedEWDString = match.str(1);
+                else cachedEWDString = "Ruminative Dash";
             }
 
             std::ranges::transform(cachedEWDString, cachedEWDString.begin(), [](const unsigned char c){ return std::toupper(c); });
@@ -95,7 +88,7 @@ class $modify(TLTMenuLayer, MenuLayer) {
 
         const auto titleLogo = typeinfo_cast<CCSprite*>(getChildByIDRecursive("main-title"));
         if (!titleLogo) {
-            log::error("whoever removed the node with ID 'main-title' from the MenuLayer, you are a menace to society!");
+            log::error("whoever removed the node with ID 'main-title' from the MenuLayer, you are a menace to society!"); // i'm keeping this
             return true;
         }
 
