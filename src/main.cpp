@@ -6,6 +6,7 @@ using namespace geode::prelude;
 
 std::string customTitleLogo = "Geometry Dash";
 std::string cachedEWDString = "Ruminative Dash";
+bool loadFailed = false;
 
 bool setupTitleLogoReplacement(CCSprite* titleLogo, bool loadingLayer)
 {
@@ -56,13 +57,14 @@ class $modify(TLTLoadingLayer, LoadingLayer)
         {
             web::WebTask task = web::WebRequest().get("https://gdcolon.com/ewd_history.txt");
             while (task.isPending()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("oh no!!"); rawResponse == "oh no!!") cachedEWDString = "Ruminative Dash";
+            if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("oh no!!"); rawResponse == "oh no!!") loadFailed = true;
             else {
                 const std::regex pattern(R"(->\s*(.+)$)"); // everything after the arrow, we don't need the date
                 if (std::smatch match; std::regex_search(rawResponse, match, pattern) && match.size() > 1) cachedEWDString = match.str(1);
-                else cachedEWDString = "Ruminative Dash";
+                else loadFailed = true;
             }
 
+            if (loadFailed) cachedEWDString = "Ruminative Dash";
             std::ranges::transform(cachedEWDString, cachedEWDString.begin(), [](const unsigned char c){ return std::toupper(c); });
 
             CCFileUtils::sharedFileUtils()->addSearchPath((Mod::get()->getTempDir() / "resources").string().c_str());
@@ -94,13 +96,18 @@ class $modify(TLTMenuLayer, MenuLayer) {
 
         if (!Mod::get()->getSettingValue<bool>("every-word-dash-integration")) customTitleLogo = Mod::get()->getSettingValue<std::string>("custom-title-logo");
         else {
-            if (cachedEWDString.empty())
+            if (loadFailed)
             {
                 customTitleLogo = "GEOMETRY DASH";
-                FLAlertLayer::create(
-                    "Failed to get EWD string from cache",
-                    "oops sorry, it's me fumbling as always",
-                    "OK"
+                // FLAlertLayer::create(
+                //     "Title Logo Tweaks",
+                //     "Failed to get EWD string from cache!",
+                //     "OK"
+                // )->show();
+                Notification::create(
+                    "Failed to fetch/parse EWD string",
+                    NotificationIcon::Error,
+                    1.f
                 )->show();
             } else customTitleLogo = cachedEWDString;
         }
