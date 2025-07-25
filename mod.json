@@ -6,11 +6,11 @@
 		"mac": "2.2074",
 		"ios": "2.2074"
 	},
-	"id": "catgirlde.titlelogotweaks",
+	"id": "catgirldev.titlelogotweaks",
 	"name": "Title Logo Tweaks",
 	"version": "v1.0.0",
 	"developer": "catgirldev",
-	"description": "A mod that tweaks the title logo in Geometry Dash.",
+	"description": "Customize the Geometry Dash logo!",
 	"settings": {
 		"custom-title-logo": {
 			"name": "Custom Title Logo",
