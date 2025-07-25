@@ -8,7 +8,7 @@ std::string customTitleLogo = "Geometry Dash";
 std::string cachedEWDString = "Ruminative Dash";
 bool loadFailed = false;
 
-bool setupTitleLogoReplacement(CCSprite* titleLogo, bool loadingLayer)
+bool setupTitleLogoReplacement(CCSprite* titleLogo)
 {
     titleLogo->setOpacity(0);
 
@@ -30,11 +30,8 @@ bool setupTitleLogoReplacement(CCSprite* titleLogo, bool loadingLayer)
     titleLogo->addChild(newTitleLogoUnderlay);
     titleLogo->updateLayout();
 
-    // if (loadingLayer) titleLogo->setScale(1.2f); else titleLogo->setScale(1.1f);
-
-    const auto center = titleLogo->getContentSize() / 2.f;
-    newTitleLogo->setPosition(center);
-    newTitleLogo->setPosition(newTitleLogo->getPositionX() + 6.f, newTitleLogo->getPositionY() - 4.f); // i hate hardcoded stuff but this will do
+    newTitleLogo->setPosition(titleLogo->getContentSize() / 2.f);
+    newTitleLogo->setPosition(newTitleLogo->getPositionX() + 6.f, newTitleLogo->getPositionY() - 4.f);
     newTitleLogoUnderlay->setPosition(newTitleLogo->getPosition());
     newTitleLogo->setScale(1.25f); newTitleLogoUnderlay->setScale(1.25f);
 
@@ -62,7 +59,7 @@ class $modify(TLTLoadingLayer, LoadingLayer)
             while (task.isPending()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
             if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("oh no!!"); rawResponse == "oh no!!") loadFailed = true;
             else {
-                const std::regex pattern(R"(->\s*(.+)$)"); // everything after the arrow, we don't need the date
+                const std::regex pattern(R"(->\s*(.+)$)"); // colon pls lmk if you change the formatting
                 if (std::smatch match; std::regex_search(rawResponse, match, pattern) && match.size() > 1) cachedEWDString = match.str(1);
                 else loadFailed = true;
             }
@@ -83,7 +80,14 @@ class $modify(TLTLoadingLayer, LoadingLayer)
 
         if (!LoadingLayer::init(fromRefresh)) return false;
 
-        return setupTitleLogoReplacement(typeinfo_cast<CCSprite*>(getChildByIDRecursive("gd-logo")), true);
+        const auto titleLogo = typeinfo_cast<CCSprite*>(getChildByIDRecursive("gd-logo"));
+        if (!titleLogo)
+        {
+            log::error("node 'gd-logo' is missing for some reason?");
+            return true;
+        }
+
+        return setupTitleLogoReplacement(titleLogo);
     }
 };
 
@@ -102,11 +106,6 @@ class $modify(TLTMenuLayer, MenuLayer) {
             if (loadFailed)
             {
                 customTitleLogo = "GEOMETRY DASH";
-                // FLAlertLayer::create(
-                //     "Title Logo Tweaks",
-                //     "Failed to get EWD string from cache!",
-                //     "OK"
-                // )->show();
                 Notification::create(
                     "Failed to fetch/parse EWD string",
                     NotificationIcon::Error,
@@ -115,6 +114,6 @@ class $modify(TLTMenuLayer, MenuLayer) {
             } else customTitleLogo = cachedEWDString;
         }
 
-        return setupTitleLogoReplacement(titleLogo, false);
+        return setupTitleLogoReplacement(titleLogo);
     }
 };
