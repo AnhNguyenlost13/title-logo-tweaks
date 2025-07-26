@@ -53,6 +53,8 @@ class $modify(TLTLoadingLayer, LoadingLayer)
     $override bool init(const bool fromRefresh)
     {
         // Initial setup - only on the first load
+        errorCode = 0; // oops
+
         if (!fromRefresh)
         {
             web::WebTask task = web::WebRequest().get("https://gdcolon.com/ewd_history.txt");
