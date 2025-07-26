@@ -61,17 +61,17 @@ class $modify(TLTLoadingLayer, LoadingLayer)
             while (task.isPending()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
             if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("what‼"); rawResponse == "what‼") errorCode += 1;
             else {
-                const std::regex pattern(R"(->\s*(.+)$)"); // colon pls lmk if you change the formatting
-                if (std::smatch match; std::regex_search(rawResponse, match, pattern) && match.size() > 1) cachedEWDString = match.str(1);
-                else {
-                    if (const auto arrow = rawResponse.find("->"); arrow != std::string::npos)
-                    {
-                        std::string temp = rawResponse.substr(arrow + 2);
-                        if (const size_t space = temp.find_first_not_of(" "); space != std::string::npos) temp = temp.substr(space);
-                        else errorCode += 2;
-                        cachedEWDString = temp;
-                    }
+                // colon pls lmk if you change the formatting
+                auto startPos = rawResponse.find("-> ");
+                auto endPos = rawResponse.find("\n");
+                if (startPos != std::string::npos || endPos != std::string::npos)
+                {
+                    cachedEWDString = rawResponse
+                        .substr(startPos + 2);
+                    cachedEWDString.erase(cachedEWDString.find_first_of("\n"), cachedEWDString.size());
                 }
+                else
+                    errorCode += 2;
             }
 
             if (errorCode > 1) cachedEWDString = "Ruminative Dash";
