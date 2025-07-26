@@ -62,16 +62,14 @@ class $modify(TLTLoadingLayer, LoadingLayer)
             if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("what‼"); rawResponse == "what‼") errorCode += 1;
             else {
                 // colon pls lmk if you change the formatting
-                auto startPos = rawResponse.find("-> ");
-                auto endPos = rawResponse.find("\n");
-                if (startPos != std::string::npos || endPos != std::string::npos)
+                // GEOMETRY DASH REFERENCE??
+                const auto startPos = rawResponse.find("-> ");
+                if (const auto endPos = rawResponse.find("\n"); startPos != std::string::npos || endPos != std::string::npos)
                 {
-                    cachedEWDString = rawResponse
-                        .substr(startPos + 2);
+                    cachedEWDString = rawResponse.substr(startPos + 3);
                     cachedEWDString.erase(cachedEWDString.find_first_of("\n"), cachedEWDString.size());
                 }
-                else
-                    errorCode += 2;
+                else errorCode += 2;
             }
 
             if (errorCode > 1) cachedEWDString = "Ruminative Dash";
