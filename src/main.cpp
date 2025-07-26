@@ -6,7 +6,7 @@ using namespace geode::prelude;
 
 std::string customTitleLogo = "Geometry Dash";
 std::string cachedEWDString = "Ruminative Dash";
-bool loadFailed = false;
+int errorCode = 0;
 
 bool setupTitleLogoReplacement(CCSprite* titleLogo)
 {
@@ -57,14 +57,14 @@ class $modify(TLTLoadingLayer, LoadingLayer)
         {
             web::WebTask task = web::WebRequest().get("https://gdcolon.com/ewd_history.txt");
             while (task.isPending()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("oh no!!"); rawResponse == "oh no!!") loadFailed = true;
+            if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("oh no!!"); rawResponse == "oh no!!") errorCode += 1;
             else {
                 const std::regex pattern(R"(->\s*(.+)$)"); // colon pls lmk if you change the formatting
                 if (std::smatch match; std::regex_search(rawResponse, match, pattern) && match.size() > 1) cachedEWDString = match.str(1);
-                else loadFailed = true;
+                else errorCode += 2;
             }
 
-            if (loadFailed) cachedEWDString = "Ruminative Dash";
+            if (errorCode > 1) cachedEWDString = "Ruminative Dash";
             std::ranges::transform(cachedEWDString, cachedEWDString.begin(), [](const unsigned char c){ return std::toupper(c); });
 
             CCFileUtils::sharedFileUtils()->addSearchPath((Mod::get()->getTempDir() / "resources").string().c_str());
@@ -103,15 +103,13 @@ class $modify(TLTMenuLayer, MenuLayer) {
 
         if (!Mod::get()->getSettingValue<bool>("every-word-dash-integration")) customTitleLogo = Mod::get()->getSettingValue<std::string>("custom-title-logo");
         else {
-            if (loadFailed)
-            {
-                customTitleLogo = "GEOMETRY DASH";
+            if (errorCode > 1)
                 Notification::create(
-                    "Failed to fetch/parse EWD string",
+                    "Failed to fetch/parse EWD string (errcode " + std::to_string(errorCode) + ")",
                     NotificationIcon::Error,
                     1.f
                 )->show();
-            } else customTitleLogo = cachedEWDString;
+            else customTitleLogo = cachedEWDString;
         }
 
         return setupTitleLogoReplacement(titleLogo);
