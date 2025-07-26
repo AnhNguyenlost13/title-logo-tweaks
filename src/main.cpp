@@ -19,12 +19,12 @@ bool setupTitleLogoReplacement(CCSprite* titleLogo)
     CCLabelBMFont* newTitleLogoUnderlay = CCLabelBMFont::create(temp.c_str(), "underlay_bigsheet.fnt"_spr);
     if (!newTitleLogo || !newTitleLogoUnderlay) return false;
 
-    newTitleLogo->limitLabelWidth(400.f, 1.f, 0.25f);
+    newTitleLogo->limitLabelWidth(450.f, 1.25f, 0.25f);
     newTitleLogo->setID("custom-main-title"_spr);
     newTitleLogo->setZOrder(1);
     titleLogo->addChild(newTitleLogo);
 
-    newTitleLogoUnderlay->limitLabelWidth(400.f, 1.f, 0.25f);
+    newTitleLogoUnderlay->limitLabelWidth(450.f, 1.25f, 0.25f);
     newTitleLogoUnderlay->setID("custom-main-title-underlay"_spr);
     newTitleLogoUnderlay->setZOrder(0);
     titleLogo->addChild(newTitleLogoUnderlay);
@@ -33,7 +33,6 @@ bool setupTitleLogoReplacement(CCSprite* titleLogo)
     newTitleLogo->setPosition(titleLogo->getContentSize() / 2.f);
     newTitleLogo->setPosition(newTitleLogo->getPositionX() + 6.f, newTitleLogo->getPositionY() - 4.f);
     newTitleLogoUnderlay->setPosition(newTitleLogo->getPosition());
-    newTitleLogo->setScale(1.25f); newTitleLogoUnderlay->setScale(1.25f);
 
     return true;
 }
