@@ -59,20 +59,28 @@ class $modify(TLTLoadingLayer, LoadingLayer)
         {
             web::WebTask task = web::WebRequest().get("https://gdcolon.com/ewd_history.txt");
             while (task.isPending()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("oh no!!"); rawResponse == "oh no!!") errorCode += 1;
+            if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("what‼"); rawResponse == "what‼") errorCode += 1;
             else {
                 const std::regex pattern(R"(->\s*(.+)$)"); // colon pls lmk if you change the formatting
                 if (std::smatch match; std::regex_search(rawResponse, match, pattern) && match.size() > 1) cachedEWDString = match.str(1);
-                else errorCode += 2;
+                else {
+                    if (const auto arrow = rawResponse.find("->"); arrow != std::string::npos)
+                    {
+                        std::string temp = rawResponse.substr(arrow + 2);
+                        if (const size_t space = temp.find_first_not_of(" "); space != std::string::npos) temp = temp.substr(space);
+                        else errorCode += 2;
+                        cachedEWDString = temp;
+                    }
+                }
             }
 
             if (errorCode > 1) cachedEWDString = "Ruminative Dash";
-            std::ranges::transform(cachedEWDString, cachedEWDString.begin(), [](const unsigned char c){ return std::toupper(c); });
+            std::ranges::transform(cachedEWDString, cachedEWDString.begin(), [this](const unsigned char c){ return std::toupper(c); });
 
             CCFileUtils::sharedFileUtils()->addSearchPath((Mod::get()->getTempDir() / "resources").string().c_str());
             CCTextureCache* textureCache = CCTextureCache::sharedTextureCache();
-            (void) textureCache->addImage("merged_atlas.png", false);
-            (void) textureCache->addImage("underlay_atlas.png", false);
+            (void) textureCache->addImage("merged_atlas.png"_spr, false);
+            (void) textureCache->addImage("underlay_atlas.png"_spr, false);
             CCLabelBMFont::create("trans rights are human rights", "merged_output.fnt"_spr);
             CCLabelBMFont::create("i should be more careful with bets next time", "underlay_bigsheet.fnt"_spr);
         }
