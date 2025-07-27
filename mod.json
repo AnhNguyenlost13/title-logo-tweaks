@@ -11,6 +11,7 @@
 	"version": "v1.0.0",
 	"developer": "catgirldev",
 	"description": "Customize the Geometry Dash logo!",
+	"tags": [ "customization", "interface", "online" ],
 	"settings": {
 		"custom-title-logo": {
 			"name": "Custom Title Logo",
@@ -38,5 +39,13 @@
 			"resources/*.png"
 		]
 	},
+	"links": {
+    "source": "https://github.com/AnhNguyenlost13/title-logo-tweaks",
+    "community": "https://discord.gg/uFj8SSUhRa"
+  },
+  "issues": {
+    "info": "Please report any problems or suggestions you have to this mod's GitHub repository by making an issue!",
+    "url": "https://github.com/AnhNguyenlost13/title-logo-tweaks/issues"
+  },
 	"early-load": true
 }
