@@ -63,15 +63,17 @@ class $modify(TLTLoadingLayer, LoadingLayer)
                 // colon pls lmk if you change the formatting
                 // GEOMETRY DASH REFERENCE??
                 const auto startPos = rawResponse.find("-> ");
-                if (const auto endPos = rawResponse.find("\n"); startPos != std::string::npos || endPos != std::string::npos)
+                if (const auto endPos = rawResponse.find('\n'); startPos != std::string::npos || endPos != std::string::npos)
                 {
                     cachedEWDString = rawResponse.substr(startPos + 3);
-                    cachedEWDString.erase(cachedEWDString.find_first_of("\n"), cachedEWDString.size());
+                    cachedEWDString.erase(cachedEWDString.find_first_of('\n'), cachedEWDString.size());
                 }
                 else errorCode += 2;
             }
 
-            if (errorCode > 1) cachedEWDString = "Ruminative Dash";
+            auto savedCache = Mod::get()->getSavedValue<std::string>("cached-ewd-string");
+            if (errorCode > 1) cachedEWDString = (savedCache.empty()) ? savedCache : "Ruminative Dash";
+            else if (savedCache != cachedEWDString) Mod::get()->setSavedValue("cached-ewd-string", cachedEWDString);
             std::ranges::transform(cachedEWDString, cachedEWDString.begin(), [this](const unsigned char c){ return std::toupper(c); });
 
             CCFileUtils::sharedFileUtils()->addSearchPath((Mod::get()->getTempDir() / "resources").string().c_str());
