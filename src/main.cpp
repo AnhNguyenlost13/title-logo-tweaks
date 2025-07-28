@@ -19,12 +19,13 @@ bool setupTitleLogoReplacement(CCSprite* titleLogo)
     CCLabelBMFont* newTitleLogoUnderlay = CCLabelBMFont::create(temp.c_str(), "underlay_bigsheet.fnt"_spr);
     if (!newTitleLogo || !newTitleLogoUnderlay) return false;
 
-    newTitleLogo->limitLabelWidth(450.f, 1.25f, 0.25f);
+    const auto winSizeWidth = CCDirector::sharedDirector()->getWinSize().width;
+    newTitleLogo->limitLabelWidth(winSizeWidth * 80 / 100, 1.25f, 0.25f);
     newTitleLogo->setID("custom-main-title"_spr);
     newTitleLogo->setZOrder(1);
     titleLogo->addChild(newTitleLogo);
 
-    newTitleLogoUnderlay->limitLabelWidth(450.f, 1.25f, 0.25f);
+    newTitleLogoUnderlay->limitLabelWidth(winSizeWidth * 80 / 100, 1.25f, 0.25f);
     newTitleLogoUnderlay->setID("custom-main-title-underlay"_spr);
     newTitleLogoUnderlay->setZOrder(0);
     titleLogo->addChild(newTitleLogoUnderlay);
@@ -52,7 +53,7 @@ class $modify(TLTLoadingLayer, LoadingLayer)
     $override bool init(const bool fromRefresh)
     {
         // Initial setup - only on the first load
-        errorCode = 0; // oops
+        errorCode = 0;
 
         if (!fromRefresh)
         {
