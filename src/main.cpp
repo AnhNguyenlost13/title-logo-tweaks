@@ -12,11 +12,10 @@ int errorCode = 0;
 class $modify(CCLabelBMFontFix, CCLabelBMFont)
 {
     void limitLabelWidth(const float width, const float defaultScale, const float minScale) {
+
         const auto originalWidth = this->getContentSize().width;
         auto scale = this->getScale();
-        if (defaultScale > scale) scale = defaultScale;
         if (originalWidth > width && width > 0.0f) scale = width / originalWidth;
-        if (defaultScale != 0.0f && defaultScale <= scale) scale = defaultScale;
         if (minScale != 0.0f && minScale >= scale) scale = minScale;
         this->setScale(scale);
     }
@@ -33,14 +32,13 @@ bool setupTitleLogoReplacement(CCSprite* titleLogo)
     CCLabelBMFont* newTitleLogoUnderlay = CCLabelBMFont::create(temp.c_str(), "underlay_bigsheet.fnt"_spr);
     if (!newTitleLogo || !newTitleLogoUnderlay) return false;
 
-    const auto winSizeWidth = CCDirector::sharedDirector()->getWinSize().width;
-    newTitleLogo->limitLabelWidth(winSizeWidth * 80 / 100, 1.25f, 0.25f);
+    const float predeterminedWidth = CCDirector::sharedDirector()->getWinSize().width * 0.69f;
+    newTitleLogo->limitLabelWidth(predeterminedWidth, 1.25f, 0.25f);
     newTitleLogo->setID("custom-main-title"_spr);
     newTitleLogo->setZOrder(1);
     titleLogo->addChild(newTitleLogo);
 
-    newTitleLogoUnderlay->limitLabelWidth(winSizeWidth * 80 / 100, 1.25f, 0.25f);
-    log::info("underlay widthB: {}, scaleB: {}", newTitleLogoUnderlay->getContentWidth(), newTitleLogoUnderlay->getScale());
+    newTitleLogoUnderlay->limitLabelWidth(predeterminedWidth, 1.25f, 0.25f);
     newTitleLogoUnderlay->setID("custom-main-title-underlay"_spr);
     newTitleLogoUnderlay->setZOrder(0);
     titleLogo->addChild(newTitleLogoUnderlay);
@@ -62,29 +60,28 @@ class $modify(TLTLoadingLayer, LoadingLayer)
 
     static void onModify(auto& self)
     {
-        if (Result<> res = self.setHookPriorityPre("LoadingLayer::init", Priority::Late); !res || res.isErr()) log::error("Failed to set hook priority: {}", res.unwrapErr());
+        // darkmode "compatibility, thank you bitz"
+        if (Result<> res = self.setHookPriorityAfterPost("LoadingLayer::init", "bitz.darkmode_v4"); !res || res.isErr()) log::error("Failed to set hook priority: {}", res.unwrapErr());
     }
 
     $override bool init(const bool fromRefresh)
     {
         // Initial setup - only on the first load
         errorCode = 0;
-
+        std::string rawResponse = "ooh shiny";
         if (!fromRefresh)
         {
-            web::WebTask task = web::WebRequest().get("https://gdcolon.com/ewd_history.txt");
-            while (task.isPending()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            if (const std::string rawResponse = task.getFinishedValue()->string().unwrapOr("what‼"); rawResponse == "what‼") errorCode += 1;
+            m_fields->m_listener.bind([this, rawResponse] (web::WebTask::Event* event) mutable
+            {
+                if (const web::WebResponse* response = event->getValue()) rawResponse = response->string().unwrapOr("jarvis, trigger error handling");
+                else if (event->isCancelled()) rawResponse = "jarvis, trigger error handling";
+            }
+            );
+
+            m_fields->m_listener.setFilter(web::WebRequest().get("https://raw.githubusercontent.com/AnhNguyenlost13/every-word-dash-api/refs/heads/master/badeline.txt"));
+            if (rawResponse == "jarvis, trigger error handling") errorCode += 1;
             else {
-                // colon pls lmk if you change the formatting
-                // GEOMETRY DASH REFERENCE??
-                const auto startPos = rawResponse.find("-> ");
-                if (const auto endPos = rawResponse.find('\n'); startPos != std::string::npos || endPos != std::string::npos)
-                {
-                    cachedEWDString = rawResponse.substr(startPos + 3);
-                    cachedEWDString.erase(cachedEWDString.find_first_of('\n'), cachedEWDString.size());
-                }
-                else errorCode += 2;
+                cachedEWDString = rawResponse;
             }
 
             auto savedCache = Mod::get()->getSavedValue<std::string>("cached-ewd-string");
