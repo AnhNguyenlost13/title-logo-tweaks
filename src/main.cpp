@@ -1,6 +1,8 @@
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/LoadingLayer.hpp>
 #include <regex>
+#include <Geode/ui/Notification.hpp>
+#include <Geode/utils/web.hpp>
 
 using namespace geode::prelude;
 
