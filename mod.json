@@ -32,11 +32,11 @@
 			"default": true,
 			"description": "Forces the font to be <cj>uppercase</cj>, if disabled you still can use both lower and upper cases.\n<cy>Note that Every Word Dash titles are always uppercase.</cy>"
 		},
-		"prefetch-word":  {
-			"name": "Prefetch Word (Read Info!)",
+		"aggresive-prefetch":  {
+			"name": "Aggressive Prefetch (Read Info!)",
 			"type": "bool",
 			"default": true,
-			"description": "Prefetch the word from the Every Word Dash API <cy>on game boot</cy>. This will make the title logo be the latest one on game boot, <cr>at the expense of the game taking longer to start.</cr>\nDon't worry, the game won't explode if the API is down.",
+			"description": "More aggressively fetches the word from the Every Word Dash API <cy>on game boot</cy>. This will help make the title logo be more up-to-date on game boot, <cr>at the expense of the game taking longer to start.</cr>\nDon't worry, the game won't explode if the API is down.",
 			"enable-if": "every-word-dash-integration",
 			"enable-if-description": "Enable the EWD integration to use this setting."
 		}

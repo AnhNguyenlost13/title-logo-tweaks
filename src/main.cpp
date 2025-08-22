@@ -71,23 +71,42 @@ class $modify(TLTLoadingLayer, LoadingLayer)
         std::string rawResponse = "ooh shiny";
         if (!fromRefresh)
         {
-            m_fields->m_listener.bind([this, rawResponse] (web::WebTask::Event* event) mutable
+            // fetch the last string if the web req somehow didn't make it
+            const auto savedCache = Mod::get()->getSavedValue<std::string>("cached-ewd-string");
+            cachedEWDString = savedCache;
+            if (savedCache.empty()) {
+                errorCode += 1;
+                cachedEWDString = "Ruminative Dash";
+            }
+
+            if (Mod::get()->getSettingValue<bool>("aggresive-prefetch"))
             {
-                if (const web::WebResponse* response = event->getValue()) rawResponse = response->string().unwrapOr("jarvis, trigger error handling");
-                else if (event->isCancelled()) rawResponse = "jarvis, trigger error handling";
-            }
-            );
+                auto req = web::WebRequest().timeout(std::chrono::seconds(3));
+                const web::WebTask etask = req.get("https://raw.githubusercontent.com/AnhNguyenlost13/every-word-dash-api/refs/heads/master/badeline.txt");
+                // hog the game fr
+                while (etask.isPending()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            } else
+            {
+                // listener bind
+                m_fields->m_listener.bind([rawResponse] (web::WebTask::Event* event) mutable
+                    {
+                        if (const web::WebResponse* response = event->getValue()) rawResponse = response->string().unwrapOr(".");
+                        else if (event->isCancelled()) errorCode += 2;
+                    }
+                );
 
-            m_fields->m_listener.setFilter(web::WebRequest().get("https://raw.githubusercontent.com/AnhNguyenlost13/every-word-dash-api/refs/heads/master/badeline.txt"));
-            if (rawResponse == "jarvis, trigger error handling") errorCode += 1;
-            else {
-                cachedEWDString = rawResponse;
+                // now we fetch (passively, don't hog the game)
+                m_fields->m_listener.setFilter(web::WebRequest().get("https://raw.githubusercontent.com/AnhNguyenlost13/every-word-dash-api/refs/heads/master/badeline.txt"));
+                if (rawResponse == "." || rawResponse.empty()) errorCode += 4;
+                else
+                {
+                    cachedEWDString = rawResponse;
+                    if (savedCache != cachedEWDString) Mod::get()->setSavedValue("cached-ewd-string", cachedEWDString);
+                }
             }
-
-            auto savedCache = Mod::get()->getSavedValue<std::string>("cached-ewd-string");
-            if (errorCode > 1) cachedEWDString = (savedCache.empty()) ? savedCache : "Ruminative Dash";
-            else if (savedCache != cachedEWDString) Mod::get()->setSavedValue("cached-ewd-string", cachedEWDString);
-            std::ranges::transform(cachedEWDString, cachedEWDString.begin(), [this](const unsigned char c){ return std::toupper(c); });
+            // listener already destroyed itself i think
+            // capitalize the string
+            std::ranges::transform(cachedEWDString, cachedEWDString.begin(), [](const unsigned char c){ return std::toupper(c); });
 
             CCFileUtils::sharedFileUtils()->addSearchPath((Mod::get()->getTempDir() / "resources").string().c_str());
             CCTextureCache* textureCache = CCTextureCache::sharedTextureCache();
