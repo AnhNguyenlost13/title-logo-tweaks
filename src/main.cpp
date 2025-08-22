@@ -77,9 +77,10 @@ class $modify(TLTLoadingLayer, LoadingLayer)
             if (Mod::get()->getSettingValue<bool>("aggresive-prefetch"))
             {
                 auto req = web::WebRequest().timeout(std::chrono::seconds(3));
-                const web::WebTask etask = req.get("https://raw.githubusercontent.com/AnhNguyenlost13/every-word-dash-api/refs/heads/master/badeline.txt");
+                web::WebTask etask = req.get("https://raw.githubusercontent.com/AnhNguyenlost13/every-word-dash-api/refs/heads/master/badeline.txt");
                 // hog the game fr
                 while (etask.isPending()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                if (rawResponse = etask.getFinishedValue()->string().unwrapOr("."); rawResponse == ".") errorCode += 1;
             } else
             {
                 // listener bind
