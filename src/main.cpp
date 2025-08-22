@@ -141,7 +141,9 @@ class $modify(TLTLoadingLayer, LoadingLayer)
 
         if (!LoadingLayer::init(fromRefresh)) return false;
 
-        if (const auto titleLogo = typeinfo_cast<CCSprite*>(getChildByIDRecursive("gd-logo")); !titleLogo || !setupTitleLogoReplacement(titleLogo)) return true;
+        const auto titleLogo = typeinfo_cast<CCSprite*>(getChildByIDRecursive("gd-logo"));
+        if (!titleLogo) return true;
+        setupTitleLogoReplacement(titleLogo); return true;
     }
 };
 
@@ -153,16 +155,19 @@ class $modify(TLTMenuLayer, MenuLayer) {
         if (!titleLogo) return true;
 
         if (!Mod::get()->getSettingValue<bool>("every-word-dash-integration")) customTitleLogo = Mod::get()->getSettingValue<std::string>("custom-title-logo");
-        else {
-            if (errorCode > 1)
-                Notification::create(
-                    "Failed to fetch/parse EWD string (errcode " + std::to_string(errorCode) + ")",
-                    NotificationIcon::Error,
-                    1.f
-                )->show();
+        else
+        {
+            if (errorCode > 1) {
+            Notification::create(
+                "Failed to fetch/parse EWD string (errcode " + std::to_string(errorCode) + ")",
+                NotificationIcon::Error,
+                1.f
+            )->show();
+        }
             else customTitleLogo = cachedEWDString;
         }
 
         if (!setupTitleLogoReplacement(titleLogo)) return true;
+        return true;
     }
 };
