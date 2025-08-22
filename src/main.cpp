@@ -8,21 +8,16 @@ std::string customTitleLogo = "Geometry Dash";
 std::string cachedEWDString = "Ruminative Dash";
 int errorCode = 0;
 
-#include <Geode/modify/CCLabelBMFont.hpp>
-class $modify(CCLabelBMFontFix, CCLabelBMFont)
-{
-    void limitLabelWidth(const float width, const float defaultScale, const float minScale) {
-
-        const auto originalWidth = this->getContentSize().width;
-        auto scale = this->getScale();
-        if (originalWidth > width && width > 0.0f) scale = width / originalWidth;
-        if (minScale != 0.0f && minScale >= scale) scale = minScale;
-        this->setScale(scale);
-    }
-};
-
 bool setupTitleLogoReplacement(CCSprite* titleLogo)
 {
+    auto limitLabelWidth = [](CCLabelBMFont* label, const float width, const float defaultScale, const float minScale) {
+        const auto originalWidth = label->getContentSize().width;
+        auto scale = label->getScale();
+        if (originalWidth > width && width > 0.0f) scale = width / originalWidth;
+        if (minScale != 0.0f && minScale >= scale) scale = minScale;
+        label->setScale(scale);
+    };
+
     titleLogo->setOpacity(0);
 
     std::string temp = customTitleLogo;
@@ -33,12 +28,12 @@ bool setupTitleLogoReplacement(CCSprite* titleLogo)
     if (!newTitleLogo || !newTitleLogoUnderlay) return false;
 
     const float predeterminedWidth = CCDirector::sharedDirector()->getWinSize().width * 0.69f;
-    newTitleLogo->limitLabelWidth(predeterminedWidth, 1.25f, 0.25f);
+    limitLabelWidth(newTitleLogo, predeterminedWidth, 1.25f, 0.25f);
     newTitleLogo->setID("custom-main-title"_spr);
     newTitleLogo->setZOrder(1);
     titleLogo->addChild(newTitleLogo);
 
-    newTitleLogoUnderlay->limitLabelWidth(predeterminedWidth, 1.25f, 0.25f);
+    limitLabelWidth(newTitleLogoUnderlay, predeterminedWidth, 1.25f, 0.25f);
     newTitleLogoUnderlay->setID("custom-main-title-underlay"_spr);
     newTitleLogoUnderlay->setZOrder(0);
     titleLogo->addChild(newTitleLogoUnderlay);
