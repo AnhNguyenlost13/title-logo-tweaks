@@ -15,7 +15,7 @@
 using namespace geode::prelude;
 
 std::string customTitleLogo = "Geometry Dash";
-std::string cachedEWDString = "Ruminative Dash";
+std::string cachedEWDString = "Default String";
 std::atomic<int> errorCode{0};
 static std::mutex cachedMutex;
 
