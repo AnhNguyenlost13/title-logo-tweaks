@@ -219,7 +219,7 @@ class $modify(TLTMenuLayer, MenuLayer) {
             if (errorCode.load() > 1) {
                 if (errorCode.load() == 5) {
                     Notification::create(
-                    "Restart the game to load the latest string, sorry about that.",
+                    "Restart the game for the latest word, sorry!",
                     NotificationIcon::Info,
                     1.f
                     )->show();
