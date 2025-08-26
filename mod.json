@@ -23,7 +23,7 @@
 		"every-word-dash-integration": {
 			"name": "Every Word Dash Integration",
 			"type": "bool",
-			"default": true,
+			"default": false,
 			"description": "Enable integration with the <cg>Every Word Dash API</cg>. Will send an API request on every game boot."
 		},
 		"force-uppercase": {
