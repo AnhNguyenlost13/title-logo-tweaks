@@ -1,6 +1,7 @@
 # Title Logo Tweaks
 
 Easily change the Geometry Dash title logo text to whatever you want! This mod also has an optional integration with the [Every Word Dash](https://x.com/everyworddash) API syncing your logo with the latest word there.
+**Open the mod settings to customize the logo. Texture pack support is up to the texture pack creator(s), not me.**
 
 ## Thanks to
 * [Erymanthus](https://github.com/raydeeux) for the logo replacement code + some help
