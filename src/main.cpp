@@ -98,7 +98,7 @@ class $modify(TLTLoadingLayer, LoadingLayer)
 
     static void onModify(auto& self)
     {
-        if (const Result<> res = self.setHookPriorityAfterPost("LoadingLayer::init", "bitz.darkmode_v4"); !res || res.isErr()) log::error("could not set prio: {}", res.unwrapErr());
+        if (const Result<> res = self.setHookPriorityAfterPre("LoadingLayer::init", "weebify.high-graphics-android"); !res || res.isErr()) log::error("could not set prio: {}", res.unwrapErr());
     }
 
     $override bool init(const bool fromRefresh)
