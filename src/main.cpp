@@ -131,22 +131,25 @@ class $modify(TLTLoadingLayer, LoadingLayer)
                     waited += step;
                 }
 
-                if (const auto finished = etask.getFinishedValue()) {
-                    *rawResponsePtr = finished->string().unwrapOr(".");
-                    if ((*rawResponsePtr) == ".")errorCode.fetch_add(1);
+                if (const auto finished = etask.getFinishedValue(); finished && finished->ok()) {
+                        *rawResponsePtr = finished->string().unwrapOr(".");
+                        if ((*rawResponsePtr) == ".")errorCode.fetch_add(1);
+                        else errorCode.fetch_add(1);
                 } else errorCode.fetch_add(1);
             }
             else
             {
                 m_fields->m_listener.bind([rawResponsePtr] (web::WebTask::Event* event) mutable {
                     if (const web::WebResponse* response = event->getValue()) {
-                        *rawResponsePtr = response->string().unwrapOr(".");
+                        if (response->ok()) {
+                            *rawResponsePtr = response->string().unwrapOr(".");
 
-                        if (!rawResponsePtr->empty() && *rawResponsePtr != ".") {
-                            std::scoped_lock lock(cachedMutex);
-                            cachedEWDString = *rawResponsePtr;
-                            Mod::get()->setSavedValue("cached-ewd-string", cachedEWDString);
-                        }
+                            if (!rawResponsePtr->empty() && *rawResponsePtr != ".") {
+                                std::scoped_lock lock(cachedMutex);
+                                cachedEWDString = *rawResponsePtr;
+                                Mod::get()->setSavedValue("cached-ewd-string", cachedEWDString);
+                            } else errorCode.fetch_add(1);
+                        } else errorCode.fetch_add(1);
                     }
                     else if (event->isCancelled()) errorCode.fetch_add(2);
                 });
