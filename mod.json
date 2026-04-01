@@ -1,17 +1,17 @@
 {
-	"geode": "4.7.0",
+	"geode": "5.4.1",
 	"gd": {
-		"win": "2.2074",
-		"android": "2.2074",
-		"mac": "2.2074",
-		"ios": "2.2074"
+		"win": "2.2081",
+		"android": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081	"
 	},
 	"id": "catgirldev.titlelogotweaks",
 	"name": "Title Logo Tweaks",
 	"version": "v1.0.4",
 	"developer": "catgirldev",
-	"description": "Customize the Geometry Dash logo!",
-	"tags": [ "customization", "interface", "online" ],
+	"description": "Customize the Geometry Dash logo text!",
+	"tags": [ "customization", "interface" ],
 	"settings": {
 		"custom-title-logo": {
 			"name": "Custom Title Logo",
@@ -20,25 +20,11 @@
 			"description": "Custom title logo text. Leave empty for Geometry Dash (real).",
 			"match": "^[ !\"#$%&'()*+,\\-./0-9:;<=>?@A-Z[\\]\\\\a-z{}~]*$"
 		},
-		"every-word-dash-integration": {
-			"name": "Every Word Dash Integration",
-			"type": "bool",
-			"default": false,
-			"description": "Enable integration with the <cg>Every Word Dash API</cg>. Will send an API request on every game boot."
-		},
 		"force-uppercase": {
 			"name": "Force Uppercase",
 			"type": "bool",
 			"default": true,
 			"description": "Forces the font to be <cj>uppercase</cj>, if disabled you still can use both lower and upper cases.\n<cy>Note that Every Word Dash titles are always uppercase.</cy>"
-		},
-		"aggressive-prefetch":  {
-			"name": "Aggressive Prefetch (Read Info!)",
-			"type": "bool",
-			"default": false,
-			"description": "More aggressively fetches the word from the Every Word Dash API <cy>on game boot</cy>. This will help make the title logo be more up-to-date on game boot, <cr>at the expense of the game taking longer to start.</cr>\nDon't worry, the game won't explode if the API is down.",
-			"enable-if": "every-word-dash-integration",
-			"enable-if-description": "Enable the EWD integration to use this setting."
 		}
 	},
 	"resources": {

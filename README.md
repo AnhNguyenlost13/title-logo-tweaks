@@ -7,13 +7,8 @@
 
 *To report a bug or leave a suggestion, [open a new issue](https://github.com/AnhNguyenlost13/title-logo-tweaks/issues/new/choose) or join the [Discord server](https://discord.gg/uFj8SSUhRa). Contributions are also welcome.*
 
-## Features
-* Custom logo text (including lowercase letters if you want)
-* [Every Word Dash](https://x.com/everyworddash) integration
-
 ## Preview
-<img src="/resources/misc/ploppingdash.png" alt="geometry dash title screen screenshot showing `Plopping Dash` as the logo"><br>
-*(screenshot taken some time between 10:00 and 11:00 on 07/26/2025)*
+<img src="/resources/misc/ploppingdash.png"><br>
 
 ## Thanks to
 * [Geode SDK](https://geode-sdk.org/) for the modding framework
