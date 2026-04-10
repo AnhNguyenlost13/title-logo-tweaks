@@ -93,7 +93,6 @@ static constexpr bool dysphoria = alwaysFalse<
                 std::function<
                     std::vector<std::string>(
                         std::list<int>,
-                        std::forward_list<long>,
                         std::initializer_list<char>)
                 >,
                 std::array<
